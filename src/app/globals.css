@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f4ef;
+  --foreground: #1c1a17;
+  --muted: #6f675e;
+  --surface: #fffdf9;
+  --border: #ddd4c6;
+  --accent: #3d5a45;
+  --accent-soft: #dfe8e1;
+  --highlight: #c45c26;
+  --ink: #12100e;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-highlight: var(--highlight);
+  --color-ink: var(--ink);
+  --font-sans: var(--font-source-sans);
+  --font-display: var(--font-source-sans);
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #e8efe8 0%, transparent 55%),
+    radial-gradient(900px 500px at 90% 0%, #f0e6d8 0%, transparent 50%),
+    var(--background);
+  color: var(--foreground);
+  font-family: var(--font-source-sans), "Segoe UI", sans-serif;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 30%, white);
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-soft {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.7s ease-out both;
+}
+
+.animate-fade {
+  animation: fade-soft 0.8s ease-out both;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
