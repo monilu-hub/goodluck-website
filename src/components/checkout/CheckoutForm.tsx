@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { COLOMBIA_DEPARTMENTS } from "@/lib/colombia";
-import { formatCop } from "@/lib/format";
+import { useMoney } from "@/hooks/useMoney";
+import { Link } from "@/i18n/navigation";
 import { useCartStore } from "@/stores/cart-store";
 import type { PaymentProvider } from "@/types";
 
@@ -16,6 +16,7 @@ type ProviderOption = {
 };
 
 export function CheckoutForm({ providers }: { providers: ProviderOption[] }) {
+  const { format } = useMoney();
   const items = useCartStore((s) => s.items);
   const subtotal = useCartStore((s) => s.subtotal);
   const shipping = useCartStore((s) => s.shipping);
@@ -240,7 +241,7 @@ export function CheckoutForm({ providers }: { providers: ProviderOption[] }) {
                 </div>
               </div>
               <p className="text-sm text-ink">
-                {formatCop(
+                {format(
                   (item.priceCop + (item.customizationFeeCop ?? 0)) *
                     item.quantity,
                 )}
@@ -251,15 +252,15 @@ export function CheckoutForm({ providers }: { providers: ProviderOption[] }) {
         <div className="mt-6 space-y-2 border-t border-border pt-4 text-sm">
           <div className="flex justify-between text-muted">
             <span>Subtotal</span>
-            <span>{formatCop(subtotal())}</span>
+            <span>{format(subtotal())}</span>
           </div>
           <div className="flex justify-between text-muted">
             <span>Envío</span>
-            <span>{shipping() === 0 ? "Gratis" : formatCop(shipping())}</span>
+            <span>{shipping() === 0 ? "Gratis" : format(shipping())}</span>
           </div>
           <div className="flex justify-between text-base font-semibold text-ink">
             <span>Total</span>
-            <span>{formatCop(total())}</span>
+            <span>{format(total())}</span>
           </div>
         </div>
         {error && <p className="mt-3 text-sm text-highlight">{error}</p>}

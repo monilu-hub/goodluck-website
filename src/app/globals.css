@@ -23,16 +23,24 @@
   --color-highlight: var(--highlight);
   --color-ink: var(--ink);
   --font-sans: var(--font-source-sans);
-  --font-display: var(--font-source-sans);
+  --font-display: var(--font-syne);
 }
 
 body {
   background:
     radial-gradient(1200px 600px at 10% -10%, #e8efe8 0%, transparent 55%),
     radial-gradient(900px 500px at 90% 0%, #f0e6d8 0%, transparent 50%),
-    var(--background);
+    linear-gradient(180deg, #f9f6f1 0%, var(--background) 40%, #f3efe8 100%);
   color: var(--foreground);
   font-family: var(--font-source-sans), "Segoe UI", sans-serif;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-syne), var(--font-source-sans), sans-serif;
+  letter-spacing: -0.02em;
 }
 
 ::selection {
@@ -73,4 +81,13 @@ body {
 
 .delay-200 {
   animation-delay: 200ms;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

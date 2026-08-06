@@ -1,27 +1,38 @@
-import Link from "next/link";
+"use client";
+
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export function Footer() {
+  const t = useTranslations();
+
   return (
     <footer className="mt-auto border-t border-border bg-surface">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-3 sm:px-6">
         <div>
-          <p className="text-lg font-semibold text-ink">GoodLuck</p>
-          <p className="mt-2 max-w-xs text-sm text-muted">
-            Ropa con carácter. Catálogo SS26, ediciones especiales y diseños a
-            tu medida.
-          </p>
+          <div className="relative h-10 w-32">
+            <Image
+              src="/brand/logo.webp"
+              alt="GoodLuck"
+              fill
+              className="object-contain object-left"
+              sizes="128px"
+            />
+          </div>
+          <p className="mt-3 max-w-xs text-sm text-muted">{t("tagline")}</p>
         </div>
         <div className="text-sm">
-          <p className="font-medium text-ink">Explorar</p>
+          <p className="font-display font-semibold text-ink">{t("home.collections")}</p>
           <ul className="mt-3 space-y-2 text-muted">
             <li>
               <Link href="/catalogo" className="hover:text-accent">
-                Catálogo
+                {t("nav.catalog")}
               </Link>
             </li>
             <li>
               <Link href="/disenar" className="hover:text-accent">
-                Diseñador custom
+                {t("nav.design")}
               </Link>
             </li>
             <li>
@@ -32,14 +43,14 @@ export function Footer() {
           </ul>
         </div>
         <div className="text-sm">
-          <p className="font-medium text-ink">Envíos</p>
+          <p className="font-display font-semibold text-ink">Colombia</p>
           <p className="mt-3 text-muted">
-            Envíos a toda Colombia. Envío gratis en compras desde $200.000.
+            COP / USD · ES / EN · Envíos a toda Colombia.
           </p>
         </div>
       </div>
       <div className="border-t border-border px-4 py-4 text-center text-xs text-muted">
-        © {new Date().getFullYear()} GoodLuck. Todos los derechos reservados.
+        © {new Date().getFullYear()} GoodLuck
       </div>
     </footer>
   );

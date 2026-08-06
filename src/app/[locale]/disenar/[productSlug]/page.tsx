@@ -25,8 +25,6 @@ export default async function DisenarProductoPage({
   const color =
     typeof query.color === "string" ? query.color : product.colors[0];
   const size = typeof query.size === "string" ? query.size : "M";
-  const frase =
-    typeof query.frase === "string" ? query.frase : undefined;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
@@ -41,7 +39,6 @@ export default async function DisenarProductoPage({
         initialSlug={product.slug}
         initialColor={color}
         initialSize={size}
-        initialPhrase={frase}
       />
     </div>
   );

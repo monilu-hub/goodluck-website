@@ -23,29 +23,65 @@ function variants(
   );
 }
 
+const IMG = {
+  oversizedNegro:
+    "/products/mockups/camiseta-oversized-fit-negro-h-m-co-1-front.webp",
+  oversizedNegroBack:
+    "/products/mockups/camiseta-oversized-fit-negro-h-m-co-1-back.webp",
+  oversizedOff:
+    "/products/mockups/camiseta-oversized-fit-off-white.webp",
+  oversizedBeige:
+    "/products/mockups/camiseta-oversized-fit-beige-oscuro-h-m-co.webp",
+  oversizedGris: "/products/mockups/camiseta-oversized-fit-gris.webp",
+  oversizedCafe: "/products/mockups/camiseta-oversized-fit-cafe.webp",
+  oversizedOliva:
+    "/products/mockups/camiseta-oversized-fit-negro-h-m-co-1-verde-oliva.webp",
+  oversizedAcid:
+    "/products/mockups/camiseta-oversized-fit-negro-acid-wash-negro.webp",
+  algodonRosado:
+    "/products/mockups/camiseta-de-algodon-rosado-apagado-oscuro-h-m-co.webp",
+  algodonCaqui:
+    "/products/mockups/camiseta-en-algodon-verde-caqui-h-m-co.webp",
+  crop: "/products/mockups/crop-top-femenino.webp",
+  cropAlt: "/products/mockups/camiseta-oversized-crop-top-fem.webp",
+  mundialRoja: "/products/designs/mundial-2026/camiseta-roja-front.webp",
+  mundialAmarilla:
+    "/products/designs/mundial-2026/camiseta-amarilla-front.webp",
+  mundialNavy: "/products/designs/mundial-2026/camiseta-azul-navy-front.webp",
+  mundialRey: "/products/designs/mundial-2026/camiseta-azul-rey-front.webp",
+  mundialRosada: "/products/designs/mundial-2026/camiseta-rosada-front.webp",
+  mundialBaby: "/products/designs/mundial-2026/camiseta-babyblue-front.webp",
+  mundialOff: "/products/designs/mundial-2026/camiseta-offwhite-front.webp",
+  hero: "/products/mockups/el.webp",
+  siluetas: "/products/mockups/siluetas.webp",
+};
+
 export const COLLECTIONS: Collection[] = [
   {
     id: "col-ss26",
     slug: "ss26",
     name: "SS26",
-    description: "Colección Spring/Summer 2026 — cortes limpios y color con personalidad.",
-    heroImage: "/products/mockups/camiseta-oversized-negro.svg",
+    description:
+      "Colección Spring/Summer 2026 — cortes limpios y color con personalidad.",
+    heroImage: IMG.oversizedNegro,
     sortOrder: 1,
   },
   {
     id: "col-padre",
     slug: "dia-del-padre-2026",
     name: "Día del Padre 2026",
-    description: "Piezas pensadas para regalar — oversized, algodón y detalles GoodLuck.",
-    heroImage: "/products/mockups/camiseta-algodon-verde-caqui.svg",
+    description:
+      "Piezas pensadas para regalar — oversized, algodón y detalles GoodLuck.",
+    heroImage: IMG.oversizedCafe,
     sortOrder: 2,
   },
   {
     id: "col-mundial",
     slug: "mundial-fifa26",
     name: "Mundial FIFA26",
-    description: "Pre-orden edición Mundial — colores vivos listos para la cancha y la calle.",
-    heroImage: "/products/designs/mundial-2026/camiseta-roja.svg",
+    description:
+      "Pre-orden edición Mundial — colores vivos listos para la cancha y la calle.",
+    heroImage: IMG.mundialRoja,
     sortOrder: 3,
   },
 ];
@@ -63,41 +99,63 @@ export const PRODUCTS: Product[] = [
     gender: "unisex",
     basePriceCop: 89900,
     isCustomizable: true,
-    colors: ["negro", "off-white", "beige-oscuro", "gris", "cafe", "verde-oliva", "acid-negro"],
+    colors: [
+      "negro",
+      "off-white",
+      "beige-oscuro",
+      "gris",
+      "cafe",
+      "verde-oliva",
+      "acid-negro",
+    ],
     sizes: SIZES,
     featured: true,
     images: [
       {
-        url: "/products/mockups/camiseta-oversized-negro.svg",
+        url: IMG.oversizedNegro,
         alt: "Camiseta Oversized Fit negro",
         view: "front",
         color: "negro",
       },
       {
-        url: "/products/mockups/camiseta-oversized-off-white.svg",
+        url: IMG.oversizedNegroBack,
+        alt: "Camiseta Oversized Fit negro espalda",
+        view: "back",
+        color: "negro",
+      },
+      {
+        url: IMG.oversizedOff,
         alt: "Camiseta Oversized Fit off-white",
         view: "front",
         color: "off-white",
       },
       {
-        url: "/products/mockups/camiseta-oversized-beige.svg",
-        alt: "Camiseta Oversized Fit beige oscuro",
+        url: IMG.oversizedBeige,
+        alt: "Camiseta Oversized Fit beige",
         view: "front",
         color: "beige-oscuro",
       },
     ],
     variants: variants(
       "prod-oversized",
-      ["negro", "off-white", "beige-oscuro", "gris", "cafe", "verde-oliva", "acid-negro"],
+      [
+        "negro",
+        "off-white",
+        "beige-oscuro",
+        "gris",
+        "cafe",
+        "verde-oliva",
+        "acid-negro",
+      ],
       89900,
       {
-        negro: "/products/mockups/camiseta-oversized-negro.svg",
-        "off-white": "/products/mockups/camiseta-oversized-off-white.svg",
-        "beige-oscuro": "/products/mockups/camiseta-oversized-beige.svg",
-        gris: "/products/mockups/camiseta-oversized-gris.svg",
-        cafe: "/products/mockups/camiseta-oversized-cafe.svg",
-        "verde-oliva": "/products/mockups/camiseta-oversized-oliva.svg",
-        "acid-negro": "/products/mockups/camiseta-oversized-acid.svg",
+        negro: IMG.oversizedNegro,
+        "off-white": IMG.oversizedOff,
+        "beige-oscuro": IMG.oversizedBeige,
+        gris: IMG.oversizedGris,
+        cafe: IMG.oversizedCafe,
+        "verde-oliva": IMG.oversizedOliva,
+        "acid-negro": IMG.oversizedAcid,
       },
     ),
   },
@@ -118,14 +176,14 @@ export const PRODUCTS: Product[] = [
     featured: true,
     images: [
       {
-        url: "/products/mockups/camiseta-algodon-rosado.svg",
-        alt: "Camiseta algodón rosado apagado",
+        url: IMG.algodonRosado,
+        alt: "Camiseta algodón rosado",
         view: "front",
         color: "rosado-apagado",
       },
       {
-        url: "/products/mockups/camiseta-algodon-verde-caqui.svg",
-        alt: "Camiseta algodón verde caqui",
+        url: IMG.algodonCaqui,
+        alt: "Camiseta algodón caqui",
         view: "front",
         color: "verde-caqui",
       },
@@ -135,8 +193,8 @@ export const PRODUCTS: Product[] = [
       ["rosado-apagado", "verde-caqui"],
       79900,
       {
-        "rosado-apagado": "/products/mockups/camiseta-algodon-rosado.svg",
-        "verde-caqui": "/products/mockups/camiseta-algodon-verde-caqui.svg",
+        "rosado-apagado": IMG.algodonRosado,
+        "verde-caqui": IMG.algodonCaqui,
       },
     ),
   },
@@ -153,24 +211,32 @@ export const PRODUCTS: Product[] = [
     isCustomizable: true,
     colors: ["negro", "off-white"],
     sizes: SIZES,
+    featured: true,
     images: [
       {
-        url: "/products/mockups/crop-top-negro.svg",
+        url: IMG.crop,
         alt: "Crop top negro",
         view: "front",
         color: "negro",
       },
+      {
+        url: IMG.cropAlt,
+        alt: "Crop top oversized",
+        view: "front",
+        color: "off-white",
+      },
     ],
     variants: variants("prod-crop", ["negro", "off-white"], 74900, {
-      negro: "/products/mockups/crop-top-negro.svg",
-      "off-white": "/products/mockups/crop-top-off-white.svg",
+      negro: IMG.crop,
+      "off-white": IMG.cropAlt,
     }),
   },
   {
     id: "prod-padre-oversized",
     slug: "oversized-dia-del-padre",
     name: "Oversized Día del Padre",
-    description: "Edición especial Día del Padre 2026. Mismo oversized premium, paleta regalo.",
+    description:
+      "Edición especial Día del Padre 2026. Mismo oversized premium, paleta regalo.",
     collectionId: "col-padre",
     collectionSlug: "dia-del-padre-2026",
     type: "oversized",
@@ -182,7 +248,7 @@ export const PRODUCTS: Product[] = [
     featured: true,
     images: [
       {
-        url: "/products/mockups/camiseta-oversized-cafe.svg",
+        url: IMG.oversizedCafe,
         alt: "Oversized Día del Padre café",
         view: "front",
         color: "cafe",
@@ -193,10 +259,10 @@ export const PRODUCTS: Product[] = [
       ["negro", "cafe", "gris-medio", "beige-oscuro"],
       94900,
       {
-        negro: "/products/mockups/camiseta-oversized-negro.svg",
-        cafe: "/products/mockups/camiseta-oversized-cafe.svg",
-        "gris-medio": "/products/mockups/camiseta-oversized-gris.svg",
-        "beige-oscuro": "/products/mockups/camiseta-oversized-beige.svg",
+        negro: IMG.oversizedNegro,
+        cafe: IMG.oversizedCafe,
+        "gris-medio": "/products/mockups/camiseta-oversized-fit-gris-medio.webp",
+        "beige-oscuro": IMG.oversizedBeige,
       },
     ),
   },
@@ -212,41 +278,57 @@ export const PRODUCTS: Product[] = [
     gender: "unisex",
     basePriceCop: 99900,
     isCustomizable: true,
-    colors: ["roja", "amarilla", "azul-navy", "azul-rey", "rosada", "baby-blue", "off-white"],
+    colors: [
+      "roja",
+      "amarilla",
+      "azul-navy",
+      "azul-rey",
+      "rosada",
+      "baby-blue",
+      "off-white",
+    ],
     sizes: SIZES,
     featured: true,
     images: [
       {
-        url: "/products/designs/mundial-2026/camiseta-roja.svg",
+        url: IMG.mundialRoja,
         alt: "Camiseta Mundial roja",
         view: "front",
         color: "roja",
       },
       {
-        url: "/products/designs/mundial-2026/camiseta-amarilla.svg",
+        url: IMG.mundialAmarilla,
         alt: "Camiseta Mundial amarilla",
         view: "front",
         color: "amarilla",
       },
       {
-        url: "/products/designs/mundial-2026/camiseta-azul-navy.svg",
-        alt: "Camiseta Mundial azul navy",
+        url: IMG.mundialNavy,
+        alt: "Camiseta Mundial navy",
         view: "front",
         color: "azul-navy",
       },
     ],
     variants: variants(
       "prod-mundial",
-      ["roja", "amarilla", "azul-navy", "azul-rey", "rosada", "baby-blue", "off-white"],
+      [
+        "roja",
+        "amarilla",
+        "azul-navy",
+        "azul-rey",
+        "rosada",
+        "baby-blue",
+        "off-white",
+      ],
       99900,
       {
-        roja: "/products/designs/mundial-2026/camiseta-roja.svg",
-        amarilla: "/products/designs/mundial-2026/camiseta-amarilla.svg",
-        "azul-navy": "/products/designs/mundial-2026/camiseta-azul-navy.svg",
-        "azul-rey": "/products/designs/mundial-2026/camiseta-azul-rey.svg",
-        rosada: "/products/designs/mundial-2026/camiseta-rosada.svg",
-        "baby-blue": "/products/designs/mundial-2026/camiseta-baby-blue.svg",
-        "off-white": "/products/designs/mundial-2026/camiseta-off-white.svg",
+        roja: IMG.mundialRoja,
+        amarilla: IMG.mundialAmarilla,
+        "azul-navy": IMG.mundialNavy,
+        "azul-rey": IMG.mundialRey,
+        rosada: IMG.mundialRosada,
+        "baby-blue": IMG.mundialBaby,
+        "off-white": IMG.mundialOff,
       },
     ),
   },
@@ -265,20 +347,22 @@ export const PRODUCTS: Product[] = [
     sizes: SIZES,
     images: [
       {
-        url: "/products/mockups/camiseta-tela-fria-roja.svg",
+        url: IMG.mundialRoja,
         alt: "Camiseta tela fría roja",
         view: "front",
         color: "roja",
       },
     ],
     variants: variants("prod-fria", ["roja", "negro", "azul-navy"], 84900, {
-      roja: "/products/mockups/camiseta-tela-fria-roja.svg",
-      negro: "/products/mockups/camiseta-oversized-negro.svg",
-      "azul-navy": "/products/designs/mundial-2026/camiseta-azul-navy.svg",
+      roja: IMG.mundialRoja,
+      negro: IMG.oversizedNegro,
+      "azul-navy": IMG.mundialNavy,
     }),
   },
 ];
 
+export const HERO_IMAGE = IMG.hero;
+export const SILUETAS_IMAGE = IMG.siluetas;
 export const CUSTOMIZATION_FEE_COP = 15000;
 export const SHIPPING_COP = 12000;
 export const FREE_SHIPPING_THRESHOLD = 200000;

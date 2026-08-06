@@ -1,106 +1,225 @@
 /**
- * Copies mockups and designs from GOODLUCK_ASSETS_PATH into public/
- * and optionally docs/catalogs from the client catalog folder.
+ * Import + optimize GoodLuck assets from the client folder into public/.
  *
- * Usage:
- *   GOODLUCK_ASSETS_PATH="C:/Users/.../00_Proyectos/01_GoodLuck" npx tsx scripts/import-assets.ts
+ *   npx tsx scripts/import-assets.ts
  */
-import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync } from "fs";
-import { basename, join, extname } from "path";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  statSync,
+  writeFileSync,
+} from "fs";
+import { basename, extname, join } from "path";
 import { config } from "dotenv";
+import sharp from "sharp";
 
 config({ path: ".env.local" });
 config();
-
-const assetsRoot =
-  process.env.GOODLUCK_ASSETS_PATH ||
-  "C:/Users/monic/Documents/00_Proyectos/01_GoodLuck";
 
 const catalogRoot =
   process.env.GOODLUCK_CATALOG_PATH ||
   "C:/Users/monic/Documents/00_Clientes/01_GoodLuck";
 
-const IMAGE_EXT = new Set([".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif"]);
+const IMAGE_EXT = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif"]);
 
 function ensureDir(dir: string) {
   mkdirSync(dir, { recursive: true });
 }
 
-function copyTree(src: string, dest: string) {
-  if (!existsSync(src)) {
-    console.warn(`Skip missing source: ${src}`);
-    return 0;
-  }
+function findChildDir(parent: string, startsWith: string): string | null {
+  if (!existsSync(parent)) return null;
+  const match = readdirSync(parent).find((name) =>
+    name.toLowerCase().startsWith(startsWith.toLowerCase()),
+  );
+  return match ? join(parent, match) : null;
+}
 
-  ensureDir(dest);
-  let count = 0;
-
-  for (const entry of readdirSync(src)) {
-    const from = join(src, entry);
-    const to = join(dest, entry);
-    const st = statSync(from);
+function listFiles(dir: string, recursive = false): string[] {
+  if (!existsSync(dir)) return [];
+  const out: string[] = [];
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    const st = statSync(full);
     if (st.isDirectory()) {
-      count += copyTree(from, to);
+      if (recursive) out.push(...listFiles(full, true));
     } else if (IMAGE_EXT.has(extname(entry).toLowerCase())) {
-      copyFileSync(from, to);
-      count += 1;
-      console.log(`Copied ${basename(from)} -> ${to}`);
+      out.push(full);
+    }
+  }
+  return out;
+}
+
+function slugify(name: string) {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\.[^.]+$/, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .slice(0, 80);
+}
+
+async function optimizeToWebp(
+  src: string,
+  destDir: string,
+  opts: { maxWidth?: number; quality?: number; name?: string } = {},
+) {
+  ensureDir(destDir);
+  const base = opts.name || slugify(basename(src));
+  const dest = join(destDir, `${base}.webp`);
+  try {
+    let pipeline = sharp(src, { failOn: "none" }).rotate();
+    if (opts.maxWidth) {
+      pipeline = pipeline.resize({
+        width: opts.maxWidth,
+        withoutEnlargement: true,
+      });
+    }
+    await pipeline.webp({ quality: opts.quality ?? 82 }).toFile(dest);
+    console.log(`OK ${basename(src)} -> ${dest}`);
+    return dest;
+  } catch (err) {
+    const fallback = join(destDir, basename(src));
+    copyFileSync(src, fallback);
+    console.warn(`Copy fallback ${basename(src)}:`, err);
+    return fallback;
+  }
+}
+
+async function importGroup(
+  files: string[],
+  destDir: string,
+  maxWidth: number,
+  limit?: number,
+) {
+  const selected = limit ? files.slice(0, limit) : files;
+  let count = 0;
+  for (const file of selected) {
+    await optimizeToWebp(file, destDir, { maxWidth });
+    count += 1;
+  }
+  return count;
+}
+
+async function main() {
+  console.log("Catalog root:", catalogRoot);
+
+  const disenos = findChildDir(catalogRoot, "00_");
+  const mockups = findChildDir(catalogRoot, "01_mock");
+  if (!disenos) throw new Error("00_Diseños folder not found");
+
+  const logoDir = findChildDir(disenos, "00_logo");
+  const rompehielos = findChildDir(disenos, "01_");
+  const mundial = findChildDir(disenos, "02_");
+  const genZ = findChildDir(disenos, "03_");
+  const trending = findChildDir(disenos, "04_");
+  const diaPadre = findChildDir(disenos, "05_");
+
+  const brandDir = join(process.cwd(), "public", "brand");
+  const mockupsDest = join(process.cwd(), "public", "products", "mockups");
+  const mundialDest = join(
+    process.cwd(),
+    "public",
+    "products",
+    "designs",
+    "mundial-2026",
+  );
+  const printsRoot = join(process.cwd(), "public", "products", "prints");
+
+  ensureDir(brandDir);
+
+  // Logo
+  let logoCount = 0;
+  if (logoDir) {
+    const logos = listFiles(logoDir).filter((f) =>
+      /transparente|logo/i.test(basename(f)),
+    );
+    const preferred =
+      logos.find((f) => /transparente/i.test(basename(f))) || logos[0];
+    if (preferred) {
+      await optimizeToWebp(preferred, brandDir, {
+        maxWidth: 1200,
+        quality: 90,
+        name: "logo",
+      });
+      logoCount = 1;
     }
   }
 
-  return count;
-}
-
-function copyPdfCatalogs() {
-  const dest = join(process.cwd(), "docs", "catalogs");
-  ensureDir(dest);
-  let count = 0;
-
-  const candidates = [
-    join(catalogRoot, "02_Catálogo Goodluck", "SS26_Goodluck-catalogo.pdf"),
-    join(catalogRoot, "Catálogo West Basic 2026 v1.pdf"),
-  ];
-
-  for (const file of candidates) {
-    if (!existsSync(file)) continue;
-    const target = join(dest, basename(file));
-    copyFileSync(file, target);
-    count += 1;
-    console.log(`Copied catalog PDF -> ${target}`);
+  // Color board
+  if (rompehielos) {
+    const colores = listFiles(rompehielos).find((f) =>
+      /colores\.png$/i.test(basename(f)),
+    );
+    if (colores) {
+      await optimizeToWebp(colores, brandDir, {
+        maxWidth: 1600,
+        name: "color-board",
+      });
+    }
   }
 
-  return count;
-}
+  // Mockups
+  const mockupFiles = mockups ? listFiles(mockups) : [];
+  const mockCount = await importGroup(mockupFiles, mockupsDest, 1200);
 
-const mockupsSrc = join(assetsRoot, "01_Mock ups");
-const designsSrc = join(assetsRoot, "00_Diseños", "02_Mundial `26");
-const altDesigns = join(assetsRoot, "00_Diseños", "02_Mundial '26");
+  // Mundial product shots
+  const mundialFiles = mundial
+    ? listFiles(mundial).filter((f) => /camiseta/i.test(basename(f)))
+    : [];
+  const mundialCount = await importGroup(mundialFiles, mundialDest, 1200);
 
-const mockupsDest = join(process.cwd(), "public", "products", "mockups");
-const designsDest = join(
-  process.cwd(),
-  "public",
-  "products",
-  "designs",
-  "mundial-2026",
-);
+  // Prints libraries
+  const printMap: Array<[string | null, string, number]> = [
+    [rompehielos, "rompehielos", 24],
+    [genZ, "gen-z", 20],
+    [trending, "trending", 16],
+    [diaPadre, "dia-padre", 24],
+    [mundial, "mundial", 20],
+  ];
 
-console.log("Importing GoodLuck assets...");
-console.log(`Assets root: ${assetsRoot}`);
+  const printManifest: Array<{
+    id: string;
+    collection: string;
+    name: string;
+    url: string;
+  }> = [];
 
-const mockups = copyTree(mockupsSrc, mockupsDest);
-const designs = existsSync(designsSrc)
-  ? copyTree(designsSrc, designsDest)
-  : copyTree(altDesigns, designsDest);
-const pdfs = copyPdfCatalogs();
+  for (const [srcDir, collection, limit] of printMap) {
+    if (!srcDir) continue;
+    const dest = join(printsRoot, collection);
+    const files = listFiles(srcDir, true)
+      .filter((f) => !/whatsapp/i.test(basename(f)))
+      .sort((a, b) => statSync(b).size - statSync(a).size);
+    const picked = files.slice(0, limit);
+    for (const file of picked) {
+      const name = slugify(basename(file));
+      const out = await optimizeToWebp(file, dest, {
+        maxWidth: 1400,
+        quality: 85,
+        name,
+      });
+      printManifest.push({
+        id: `${collection}-${name}`,
+        collection,
+        name: basename(file).replace(/\.[^.]+$/, ""),
+        url: `/products/prints/${collection}/${basename(out)}`,
+      });
+    }
+  }
 
-console.log(
-  `\nDone. Mockups: ${mockups}, designs: ${designs}, catalog PDFs: ${pdfs}`,
-);
+  const manifestPath = join(process.cwd(), "data", "prints.json");
+  writeFileSync(manifestPath, JSON.stringify(printManifest, null, 2), "utf8");
 
-if (mockups === 0 && designs === 0) {
-  console.warn(
-    "\nNo external assets found. Placeholder SVGs in public/products will be used until GOODLUCK_ASSETS_PATH is set.",
+  console.log(
+    `\nDone. logo=${logoCount} mockups=${mockCount} mundial=${mundialCount} prints=${printManifest.length}`,
   );
-  process.exitCode = 0;
 }
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
