@@ -8,6 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "import:assets": "tsx scripts/import-assets.ts",
+    "prints:transparent": "tsx scripts/process-prints-transparent.ts",
+    "models:seed": "tsx scripts/seed-model-library.ts",
+    "models:library": "tsx scripts/generate-model-library.ts",
+    "catalog:lookbook": "tsx scripts/generate-catalog-lookbook.ts",
+    "assets:seed": "tsx scripts/seed-model-library.ts && tsx scripts/generate-catalog-lookbook.ts --seed-only",
     "seed": "tsx supabase/seed/products.ts"
   },
   "dependencies": {
@@ -18,6 +23,7 @@
     "mercadopago": "^3.3.0",
     "next": "16.3.0",
     "next-intl": "^4.13.5",
+    "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "sharp": "^0.35.3",
@@ -29,6 +35,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/fabric": "^5.3.11",
     "@types/node": "^20",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv": "^17.4.2",

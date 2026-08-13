@@ -1,21 +1,29 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
+import { useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { Product } from "@/types";
 import { CUSTOMIZATION_FEE_COP } from "../../../data/catalog";
+import { lookbookPath } from "../../../data/lookbook";
+import {
+  HEIGHT_MAX,
+  HEIGHT_MIN,
+  HEIGHT_STEP,
+  MODELS,
+  heightLabel,
+  modelImage,
+  snapHeight,
+  type ModelCamera,
+  type ModelGender,
+} from "../../../data/models";
 import { useMoney } from "@/hooks/useMoney";
 import { useCartStore } from "@/stores/cart-store";
 import { useDesignStore } from "@/stores/design-store";
-import {
-  DesignCanvas,
-  type DesignCanvasApi,
-} from "./DesignCanvas";
+import type { DesignCanvasApi } from "./DesignCanvas";
+import { DesignToolbar } from "./DesignToolbar";
 import { GarmentPicker } from "./GarmentPicker";
-import { ModelPreview } from "./ModelPreview";
-import { PrintLibrary } from "./PrintLibrary";
-import { TextTools } from "./TextTools";
-import { ToolPanel } from "./ToolPanel";
+import { ModelStage } from "./ModelStage";
 
 type Props = {
   products: Product[];
@@ -25,7 +33,13 @@ type Props = {
   initialPhrase?: string;
 };
 
-type Step = "garment" | "design" | "model";
+type Panel = "garment" | "model" | "design";
+
+const emptyDesigns = (): Record<ModelCamera, string | null> => ({
+  front: null,
+  side: null,
+  back: null,
+});
 
 export function DesignerStudio({
   products,
@@ -37,7 +51,6 @@ export function DesignerStudio({
   const t = useTranslations("designer");
   const { format } = useMoney();
   const first = products[0];
-  const [step, setStep] = useState<Step>(initialPhrase ? "design" : "garment");
   const [slug, setSlug] = useState(initialSlug || first?.slug || "");
   const product = useMemo(
     () => products.find((p) => p.slug === slug) ?? first,
@@ -47,62 +60,124 @@ export function DesignerStudio({
     initialColor || product?.colors[0] || "negro",
   );
   const [size, setSize] = useState(initialSize || "M");
-  const view = useDesignStore((s) => s.view);
-  const setView = useDesignStore((s) => s.setView);
+  const camera = useDesignStore((s) => s.view);
+  const setCamera = useDesignStore((s) => s.setView);
   const pushHistory = useDesignStore((s) => s.pushHistory);
   const undo = useDesignStore((s) => s.undo);
   const redo = useDesignStore((s) => s.redo);
+  const resetDesign = useDesignStore((s) => s.reset);
   const addItem = useCartStore((s) => s.addItem);
+
   const apiRef = useRef<DesignCanvasApi | null>(null);
+  const [designByView, setDesignByView] = useState(emptyDesigns);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [overlayUrl, setOverlayUrl] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
-  const [canvasSize, setCanvasSize] = useState({ width: 360, height: 460 });
+  const [hasSelection, setHasSelection] = useState(false);
+  const [isTextSelected, setIsTextSelected] = useState(false);
+  const [panel, setPanel] = useState<Panel>("design");
 
-  useEffect(() => {
-    const update = () => {
-      const w = Math.min(360, Math.max(280, window.innerWidth - 48));
-      setCanvasSize({ width: w, height: Math.round(w * 1.28) });
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  const garmentUrl = useMemo(() => {
-    if (!product) return "/products/mockups/camiseta-oversized-fit-negro-h-m-co-1-front.webp";
-    const byView = product.images.find(
-      (i) => i.color === color && i.view === view,
-    );
-    if (byView) return byView.url;
-    return (
-      product.images.find((i) => i.color === color)?.url ??
-      product.variants.find((v) => v.color === color)?.imageUrl ??
-      product.images[0]?.url ??
-      "/products/mockups/camiseta-oversized-fit-negro-h-m-co-1-front.webp"
-    );
-  }, [product, color, view]);
-
-  const variant = product?.variants.find(
-    (v) => v.color === color && v.size === size,
+  const preferredGender: ModelGender =
+    product?.gender === "mujer" ? "female" : "male";
+  const [gender, setGender] = useState<ModelGender>(preferredGender);
+  const [genderSource, setGenderSource] = useState(preferredGender);
+  const [modelId, setModelId] = useState(
+    () =>
+      MODELS.find(
+        (m) => m.gender === preferredGender && m.size === (initialSize || "M"),
+      )?.id ??
+      MODELS.find((m) => m.gender === preferredGender)?.id ??
+      MODELS[0]?.id ??
+      "",
+  );
+  const [heightCm, setHeightCm] = useState(() =>
+    snapHeight(MODELS.find((m) => m.id === modelId)?.heightCm ?? 170),
   );
 
-  function refreshOverlay() {
-    const overlay = apiRef.current?.exportDesignOverlay() ?? null;
-    setOverlayUrl(overlay);
-    const full = apiRef.current?.toDataURL() ?? null;
-    if (full) setPreviewUrl(full);
+  if (genderSource !== preferredGender) {
+    setGenderSource(preferredGender);
+    setGender(preferredGender);
+    const next =
+      MODELS.find((m) => m.gender === preferredGender && m.size === size) ??
+      MODELS.find((m) => m.gender === preferredGender);
+    if (next) {
+      setModelId(next.id);
+      setHeightCm(snapHeight(next.heightCm));
+    }
+  }
+
+  const genderModels = useMemo(
+    () => MODELS.filter((m) => m.gender === gender),
+    [gender],
+  );
+  const model =
+    genderModels.find((m) => m.id === modelId) ?? genderModels[0] ?? MODELS[0];
+
+  const activeColor =
+    product && product.colors.includes(color)
+      ? color
+      : (product?.colors[0] ?? color);
+
+  if (product && color !== activeColor) {
+    setColor(activeColor);
+  }
+
+  const garmentCut = product?.type === "crop-top" ? "crop" : "tee";
+  const variant =
+    product?.variants.find(
+      (v) => v.color === activeColor && v.size === size,
+    ) ?? product?.variants.find((v) => v.color === activeColor);
+  const basePrice = variant?.priceCop ?? product?.variants[0]?.priceCop ?? 0;
+  const totalPrice = basePrice + CUSTOMIZATION_FEE_COP;
+
+  /** Lookbook at default height (garment+color); library for height/side variants. */
+  const stageUrl = useMemo(() => {
+    if (!model) return modelImage("male-andres", "front", 170);
+    const atDefaultHeight =
+      snapHeight(heightCm) === snapHeight(model.heightCm);
+    if (
+      product &&
+      atDefaultHeight &&
+      (camera === "front" || camera === "back")
+    ) {
+      return lookbookPath(
+        product.slug,
+        activeColor,
+        camera === "back" ? "back" : "front",
+      );
+    }
+    return modelImage(model.id, camera, heightCm);
+  }, [product, model, camera, activeColor, heightCm]);
+
+  const cartImageUrl =
+    lookbookPath(product?.slug ?? "camiseta-oversized-fit", activeColor) ||
+    stageUrl;
+
+  function selectProduct(nextSlug: string) {
+    const p = products.find((x) => x.slug === nextSlug);
+    if (!p) return;
+    setSlug(nextSlug);
+    setColor(p.colors[0] ?? color);
+    setSize(p.sizes.includes(size) ? size : (p.sizes[1] ?? p.sizes[0] ?? "M"));
+    setDesignByView(emptyDesigns());
+    setPreviewUrl(null);
+    resetDesign();
+    setCamera("front");
+    setPanel("design");
+  }
+
+  function switchCamera(next: ModelCamera) {
+    const json = apiRef.current?.toJSON() ?? null;
+    setDesignByView((prev) => ({ ...prev, [camera]: json }));
+    setCamera(next);
   }
 
   async function saveAndAddToCart() {
+    if (!product || !variant) return;
     const api = apiRef.current;
-    if (!api || !product || !variant) return;
-
     setStatus("…");
-    const canvasJson = api.toJSON();
-    const dataUrl = api.toDataURL();
-    setPreviewUrl(dataUrl);
-    setOverlayUrl(api.exportDesignOverlay());
+    const canvasJson = api?.toJSON() ?? designByView[camera] ?? "{}";
+    const dataUrl = api?.toDataURL() ?? previewUrl ?? cartImageUrl;
+    if (api) setPreviewUrl(dataUrl);
 
     let designId = `local-${Date.now()}`;
     try {
@@ -112,10 +187,13 @@ export function DesignerStudio({
         body: JSON.stringify({
           productId: product.id,
           productSlug: product.slug,
-          color,
+          color: activeColor,
           size,
           canvasJson,
           previewDataUrl: dataUrl,
+          modelId: model?.id,
+          heightCm,
+          camera,
         }),
       });
       if (res.ok) {
@@ -124,7 +202,7 @@ export function DesignerStudio({
         if (data.previewUrl) setPreviewUrl(data.previewUrl);
       }
     } catch {
-      // Local fallback
+      // local fallback
     }
 
     addItem({
@@ -132,181 +210,263 @@ export function DesignerStudio({
       productSlug: product.slug,
       productName: product.name,
       variantId: variant.id,
-      color,
+      color: activeColor,
       size,
       priceCop: variant.priceCop,
-      imageUrl: garmentUrl,
+      imageUrl: cartImageUrl,
       customDesignId: designId,
       customDesignPreview: dataUrl,
       customizationFeeCop: CUSTOMIZATION_FEE_COP,
     });
-
-    setStatus(`+${format(CUSTOMIZATION_FEE_COP)}`);
+    setStatus(t("addedToCart"));
   }
 
-  const steps: { id: Step; label: string }[] = [
-    { id: "garment", label: t("stepGarment") },
-    { id: "design", label: t("stepDesign") },
-    { id: "model", label: t("stepModel") },
+  const panels: { id: Panel; label: string }[] = [
+    { id: "garment", label: t("panelGarment") },
+    { id: "model", label: t("panelModel") },
+    { id: "design", label: t("panelDesign") },
   ];
 
+  const cameras: { id: ModelCamera; label: string }[] = [
+    { id: "front", label: t("cameraFront") },
+    { id: "side", label: t("cameraSide") },
+    { id: "back", label: t("cameraBack") },
+  ];
+
+  if (!model) return null;
+
   return (
-    <div className="pb-28 lg:pb-8">
-      <div className="mb-4 flex gap-2 overflow-x-auto scrollbar-hide">
-        {steps.map((s, i) => (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => {
-              if (s.id === "model") refreshOverlay();
-              setStep(s.id);
-            }}
-            className={`shrink-0 rounded-full px-4 py-2 text-sm ${
-              step === s.id
-                ? "bg-ink text-surface"
-                : "border border-border bg-surface text-ink"
-            }`}
-          >
-            {i + 1}. {s.label}
-          </button>
-        ))}
-      </div>
-
-      {step === "garment" && (
-        <div className="mx-auto max-w-md space-y-4">
-          <GarmentPicker
-            products={products}
-            selectedSlug={slug}
-            color={color}
-            size={size}
-            onProductChange={(next) => {
-              setSlug(next);
-              const p = products.find((x) => x.slug === next);
-              if (p) setColor(p.colors[0] ?? color);
-            }}
-            onColorChange={setColor}
-            onSizeChange={setSize}
-          />
-          <button
-            type="button"
-            onClick={() => setStep("design")}
-            className="w-full rounded-full bg-ink px-6 py-3 text-sm font-medium text-surface"
-          >
-            {t("stepDesign")} →
-          </button>
-        </div>
-      )}
-
-      {step === "design" && (
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <div className="flex flex-col items-center gap-3">
-            <div className="flex gap-2">
-              {(["front", "back"] as const).map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => setView(v)}
-                  className={`rounded-full px-4 py-1.5 text-sm ${
-                    view === v ? "bg-ink text-surface" : "border border-border"
-                  }`}
-                >
-                  {v === "front" ? t("front") : t("backView")}
-                </button>
-              ))}
+    <div className="pb-36 lg:pb-8">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)] lg:items-start lg:gap-6">
+        <div className="space-y-3 lg:sticky lg:top-24">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs uppercase tracking-wider text-muted">
+              {t("stageLabel")}
+            </p>
+            <div className="flex gap-1">
+              <button
+                type="button"
+                aria-label={t("undo")}
+                onClick={() => {
+                  const json = undo();
+                  if (json) void apiRef.current?.loadJson(json);
+                }}
+                className="rounded-full border border-border px-3 py-1.5 text-sm"
+              >
+                ↶
+              </button>
+              <button
+                type="button"
+                aria-label={t("redo")}
+                onClick={() => {
+                  const json = redo();
+                  if (json) void apiRef.current?.loadJson(json);
+                }}
+                className="rounded-full border border-border px-3 py-1.5 text-sm"
+              >
+                ↷
+              </button>
             </div>
-            <DesignCanvas
-              key={`${slug}-${color}-${view}-${initialPhrase ?? ""}`}
-              garmentUrl={garmentUrl}
-              width={canvasSize.width}
-              height={canvasSize.height}
-              initialPhrase={initialPhrase}
-              onReady={(api) => {
-                apiRef.current = api;
-              }}
-              onChange={(json) => {
-                pushHistory(json);
-                refreshOverlay();
-              }}
-            />
           </div>
 
-          <div className="space-y-4">
-            <p className="text-xs uppercase tracking-wider text-muted">{t("tools")}</p>
-            <TextTools
-              onAdd={(opts) => apiRef.current?.addText(opts)}
-              onUpdate={(opts) => apiRef.current?.updateActiveText(opts)}
+          <ModelStage
+            stageUrl={stageUrl}
+            model={model}
+            camera={camera}
+            garmentCut={garmentCut}
+            size={size}
+            initialPhrase={camera === "front" ? initialPhrase : undefined}
+            canvasKey={`${slug}-${camera}-${model.id}-${garmentCut}`}
+            initialJson={designByView[camera]}
+            onReady={(api) => {
+              apiRef.current = api;
+            }}
+            onChange={(json) => {
+              pushHistory(json);
+              setDesignByView((prev) => ({ ...prev, [camera]: json }));
+            }}
+            onSelectionChange={(selected, isText) => {
+              setHasSelection(selected);
+              setIsTextSelected(isText);
+            }}
+          />
+
+          <div className="flex gap-2">
+            {cameras.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => switchCamera(c.id)}
+                className={`flex-1 rounded-full px-3 py-2 text-sm ${
+                  camera === c.id
+                    ? "bg-ink text-surface"
+                    : "border border-border bg-surface"
+                }`}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-center text-xs text-muted">
+            {model.name} · {heightLabel(heightCm)} · {t("heightPose", { band: snapHeight(heightCm) })}
+          </p>
+        </div>
+
+        <aside className="space-y-4">
+          <div className="flex gap-1 rounded-full border border-border bg-surface p-1">
+            {panels.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setPanel(p.id)}
+                className={`flex-1 rounded-full px-3 py-2 text-sm ${
+                  panel === p.id ? "bg-ink text-surface" : "text-muted"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          {panel === "garment" && (
+            <GarmentPicker
+              products={products}
+              selectedSlug={slug}
+              color={activeColor}
+              size={size}
+              onProductChange={selectProduct}
+              onColorChange={setColor}
+              onSizeChange={setSize}
             />
-            <ToolPanel
-              onUploadImage={(file) => void apiRef.current?.addImageFile(file)}
-              onBringForward={() => apiRef.current?.bringForward()}
-              onSendBack={() => apiRef.current?.sendBack()}
-              onDelete={() => apiRef.current?.deleteSelected()}
-              onUndo={() => {
-                const json = undo();
-                if (json) void apiRef.current?.loadJson(json);
-              }}
-              onRedo={() => {
-                const json = redo();
-                if (json) void apiRef.current?.loadJson(json);
-              }}
-            />
-            <div>
-              <p className="mb-2 text-xs uppercase tracking-wider text-muted">
-                {t("prints")}
-              </p>
-              <PrintLibrary
-                onSelect={(url) => void apiRef.current?.addImageUrl(url)}
+          )}
+
+          {panel === "model" && (
+            <div className="space-y-5 rounded-xl border border-border bg-surface p-4">
+              <div className="flex gap-2">
+                {(["male", "female"] as const).map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => {
+                      setGender(g);
+                      const next =
+                        MODELS.find((m) => m.gender === g && m.size === size) ??
+                        MODELS.find((m) => m.gender === g);
+                      if (next) {
+                        setModelId(next.id);
+                        setHeightCm(snapHeight(next.heightCm));
+                      }
+                    }}
+                    className={`flex-1 rounded-full px-3 py-2 text-sm ${
+                      gender === g
+                        ? "bg-ink text-surface"
+                        : "border border-border"
+                    }`}
+                  >
+                    {g === "male" ? t("male") : t("female")}
+                  </button>
+                ))}
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs uppercase tracking-wider text-muted">
+                  {t("model")}
+                </p>
+                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                  {genderModels.map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => {
+                        setModelId(m.id);
+                        setHeightCm(snapHeight(m.heightCm));
+                      }}
+                      className={`relative h-20 w-16 shrink-0 overflow-hidden rounded-xl border-2 ${
+                        model.id === m.id
+                          ? "border-ink"
+                          : "border-transparent opacity-80"
+                      }`}
+                      aria-label={m.name}
+                    >
+                      <Image
+                        src={modelImage(m.id, "front", m.heightCm)}
+                        alt={m.name}
+                        fill
+                        className="object-cover object-top"
+                        sizes="64px"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-2 flex items-center justify-between text-sm">
+                  <span className="text-muted">{t("height")}</span>
+                  <span className="font-medium text-ink">
+                    {heightLabel(heightCm)}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={HEIGHT_MIN}
+                  max={HEIGHT_MAX}
+                  step={HEIGHT_STEP}
+                  value={heightCm}
+                  onChange={(e) =>
+                    setHeightCm(snapHeight(Number(e.target.value)))
+                  }
+                  className="w-full accent-accent"
+                />
+                <p className="mt-2 text-xs text-muted">{t("heightHint")}</p>
+              </div>
+            </div>
+          )}
+
+          {panel === "design" && (
+            <div className="space-y-3">
+              <p className="text-sm text-muted">{t("designHint")}</p>
+              <DesignToolbar
+                hasSelection={hasSelection}
+                isTextSelected={isTextSelected}
+                onAddText={(opts) => apiRef.current?.addText(opts)}
+                onUpdateText={(opts) => apiRef.current?.updateActiveText(opts)}
+                onUploadImage={(file) => void apiRef.current?.addImageFile(file)}
+                onSelectPrint={(url) => void apiRef.current?.addImageUrl(url)}
+                onAddQr={(dataUrl) => void apiRef.current?.addQrImage(dataUrl)}
+                onBringForward={() => apiRef.current?.bringForward()}
+                onSendBack={() => apiRef.current?.sendBack()}
+                onDuplicate={() => void apiRef.current?.duplicateSelected()}
+                onFlip={() => apiRef.current?.flipHorizontal()}
+                onRotate={() => apiRef.current?.rotateBy(15)}
+                onDelete={() => apiRef.current?.deleteSelected()}
+                onUndo={() => {
+                  const json = undo();
+                  if (json) void apiRef.current?.loadJson(json);
+                }}
+                onRedo={() => {
+                  const json = redo();
+                  if (json) void apiRef.current?.loadJson(json);
+                }}
               />
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                refreshOverlay();
-                setStep("model");
-              }}
-              className="hidden w-full rounded-full border border-ink px-6 py-3 text-sm font-medium lg:block"
-            >
-              {t("stepModel")} →
-            </button>
-          </div>
-        </div>
-      )}
-
-      {step === "model" && (
-        <div className="mx-auto max-w-md">
-          <ModelPreview designOverlayUrl={overlayUrl ?? previewUrl} size={size} />
-        </div>
-      )}
+          )}
+        </aside>
+      </div>
 
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 p-3 backdrop-blur-md lg:static lg:mt-8 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex gap-2 lg:hidden">
-            {step !== "garment" && (
-              <button
-                type="button"
-                onClick={() =>
-                  setStep(step === "model" ? "design" : "garment")
-                }
-                className="rounded-full border border-border px-4 py-3 text-sm"
-              >
-                ←
-              </button>
-            )}
-            {step !== "model" && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (step === "garment") setStep("design");
-                  else {
-                    refreshOverlay();
-                    setStep("model");
-                  }
-                }}
-                className="flex-1 rounded-full border border-ink px-4 py-3 text-sm"
-              >
-                →
-              </button>
-            )}
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs uppercase tracking-wider text-muted">
+              {t("priceTotal")}
+            </p>
+            <p className="font-display text-xl font-semibold text-ink">
+              {format(totalPrice)}
+            </p>
+            <p className="truncate text-xs text-muted">
+              {format(basePrice)} + {format(CUSTOMIZATION_FEE_COP)}{" "}
+              {t("priceCustomization")}
+            </p>
           </div>
           <button
             type="button"
@@ -315,7 +475,9 @@ export function DesignerStudio({
           >
             {t("saveCart")}
           </button>
-          {status && <p className="text-center text-sm text-muted sm:text-left">{status}</p>}
+          {status && (
+            <p className="text-center text-sm text-muted sm:text-left">{status}</p>
+          )}
         </div>
       </div>
     </div>

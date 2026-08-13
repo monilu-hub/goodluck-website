@@ -22,12 +22,14 @@ export default async function QuizPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
-      <div className="mb-10 max-w-xl">
-        <p className="text-xs uppercase tracking-[0.25em] text-muted">GoodLuck</p>
-        <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+      <div className="mb-10 max-w-2xl">
+        <p className="text-xs uppercase tracking-[0.25em] text-muted">
+          {t("chatEyebrow")}
+        </p>
+        <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-5xl">
           {t("title")}
         </h1>
-        <p className="mt-3 text-sm text-muted">{t("subtitle")}</p>
+        <p className="mt-4 text-base leading-relaxed text-muted">{t("subtitle")}</p>
       </div>
       <PersonalityQuiz />
     </div>

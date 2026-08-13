@@ -21,20 +21,25 @@ export function AddToCartPanel({ product }: { product: Product }) {
 
   const images = useMemo(() => {
     const colorImages = product.images.filter((i) => i.color === color);
-    if (colorImages.length) return colorImages;
-    return product.images.length
-      ? product.images
-      : [
-          {
-            url:
-              product.variants.find((v) => v.color === color)?.imageUrl ??
-              product.images[0]?.url ??
-              "",
-            alt: product.name,
-            view: "front" as const,
-            color,
-          },
-        ];
+    // Prefer lookbook (model) shots; keep mockups as later gallery items
+    const ordered = (colorImages.length ? colorImages : product.images).slice();
+    ordered.sort((a, b) => {
+      const al = a.url.includes("/lookbook/") ? 0 : 1;
+      const bl = b.url.includes("/lookbook/") ? 0 : 1;
+      return al - bl;
+    });
+    if (ordered.length) return ordered;
+    return [
+      {
+        url:
+          product.variants.find((v) => v.color === color)?.imageUrl ??
+          product.images[0]?.url ??
+          "",
+        alt: product.name,
+        view: "front" as const,
+        color,
+      },
+    ];
   }, [product, color]);
 
   const image = images[Math.min(activeImage, images.length - 1)]?.url ?? "";

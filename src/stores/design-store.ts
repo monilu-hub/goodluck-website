@@ -1,18 +1,19 @@
 "use client";
 
 import { create } from "zustand";
+import type { ModelCamera } from "../../data/models";
 
 type DesignState = {
   productSlug: string | null;
   color: string | null;
   size: string;
-  view: "front" | "back";
+  view: ModelCamera;
   history: string[];
   historyIndex: number;
   setProduct: (slug: string) => void;
   setColor: (color: string) => void;
   setSize: (size: string) => void;
-  setView: (view: "front" | "back") => void;
+  setView: (view: ModelCamera) => void;
   pushHistory: (json: string) => void;
   undo: () => string | null;
   redo: () => string | null;

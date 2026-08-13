@@ -6,7 +6,9 @@
     "ss26": "SS26",
     "mundial": "World Cup",
     "design": "Design",
-    "discover": "Discover",
+    "discover": "Your vibe",
+    "blog": "Blog",
+    "faq": "FAQ",
     "account": "Account",
     "cart": "Cart",
     "menu": "Menu"
@@ -17,25 +19,56 @@
     "sub": "SS26 catalog, special drops, and your custom design in minutes.",
     "ctaCatalog": "Shop catalog",
     "ctaDesign": "Design now",
-    "ctaQuiz": "Find your line",
+    "ctaQuiz": "Find your vibe",
     "collections": "Collections",
     "collectionsSub": "Three active lines, one standard.",
     "prints": "GoodLuck prints",
     "printsSub": "Original artwork ready to customize.",
+    "toolTitle": "Design in minutes. Wear it in 24 hours.",
+    "toolSub": "Personalize it to gift, flirt, or farm good luck — delivered in Medellín within 24 hours.",
+    "toolDelivery": "24-hour delivery · Medellín",
+    "toolFeature1Title": "Garment + color, live",
+    "toolFeature1Body": "Pick oversized, crop, or cool fabric and see it on the model instantly.",
+    "toolFeature2Title": "Your design on top",
+    "toolFeature2Body": "Text, GoodLuck prints, a photo, or a QR to your favorite link.",
+    "toolFeature3Title": "Built to gift or flirt",
+    "toolFeature3Body": "A piece with character — for someone special, or to attract yours.",
+    "toolCta": "Open the designer",
     "featured": "Featured",
     "featuredSub": "Pieces ready to wear or personalize.",
     "designCta": "Design yours",
-    "designCtaSub": "Pick a garment, upload art, or use our prints."
+    "designCtaSub": "Pick a garment, upload art, or use our prints.",
+    "blog": "Fashion & trends",
+    "blogSub": "Signals, style, and what's next."
   },
   "quiz": {
-    "title": "Your good luck in love",
-    "subtitle": "Four questions. One profile. One line that makes you more attractive.",
-    "progress": "Question {current} of {total}",
+    "title": "What vibe do you project?",
+    "subtitle": "Not an empty personality quiz — a map of how you attract. Four signals. One profile. One line that feels like you.",
+    "progress": "Signal {current} of {total}",
     "back": "Back",
-    "yourMatch": "Your design",
+    "yourMatch": "Your archetype",
     "yourPhrase": "Your line",
-    "ctaPersonalize": "Personalize with this line",
-    "retake": "Try again"
+    "ctaPersonalize": "Put it on my tee",
+    "retake": "Remap",
+    "fabLabel": "Your vibe",
+    "fabOpen": "Open attraction map",
+    "fabClose": "Close",
+    "chatEyebrow": "GoodLuck · quick read",
+    "chatIntro": "Answer without overthinking. Your body already knows which signal you want to send."
+  },
+  "whatsapp": {
+    "label": "WhatsApp",
+    "aria": "Message on WhatsApp",
+    "default": "Hi GoodLuck 👋 I'm on the site and need help with a piece.",
+    "home": "Hi GoodLuck 👋 I saw the home page and want help choosing a look / design.",
+    "catalog": "Hi GoodLuck 👋 I'm browsing the catalog and want sizing/color advice.",
+    "collection": "Hi GoodLuck 👋 I'm looking at the {name} collection and want recommendations.",
+    "product": "Hi GoodLuck 👋 I'm interested in {name}. Can you help with stock, size, or customization?",
+    "designer": "Hi GoodLuck 👋 I'm designing a piece and want support with my design.",
+    "quiz": "Hi GoodLuck 👋 I did the vibe map and want my line on a tee.",
+    "checkout": "Hi GoodLuck 👋 I'm at checkout and have a shipping or payment question.",
+    "blog": "Hi GoodLuck 👋 I read the blog and want to shop that inspo.",
+    "legal": "Hi GoodLuck 👋 I have a question about an order, policies, or personal data."
   },
   "catalog": {
     "title": "Catalog",
@@ -73,7 +106,34 @@
     "fontColor": "Text color",
     "stepGarment": "Garment",
     "stepDesign": "Design",
-    "stepModel": "Model"
+    "stepModel": "Model",
+    "panelGarment": "Garment",
+    "panelModel": "Model",
+    "panelDesign": "Design",
+    "stageLabel": "Canvas",
+    "cameraFront": "Front",
+    "cameraSide": "Side",
+    "cameraBack": "Back",
+    "heightHint": "Every 10 cm changes the model pose on the canvas.",
+    "heightPose": "{band} cm pose",
+    "designHint": "Edit text, fonts, prints, photos, or a QR right on the model's tee.",
+    "edit": "Edit",
+    "done": "Done",
+    "uploadPhoto": "Upload device photo",
+    "duplicate": "Duplicate",
+    "flip": "Flip",
+    "rotate": "Rotate",
+    "modelPreviewHint": "Try the look on the model · color and prints update live",
+    "designOnModelHint": "Place text, prints, or a QR on the board; the model updates instantly.",
+    "priceTotal": "Total",
+    "priceCustomization": "customization",
+    "addedToCart": "Added to cart",
+    "qr": "QR",
+    "qrHint": "Paste a link (Instagram, Spotify, site…) and we’ll turn it into a QR for the tee.",
+    "qrPlaceholder": "https://your-link.com",
+    "qrGenerate": "Generate QR & place",
+    "qrGenerating": "Generating…",
+    "qrInvalid": "Invalid link. Try a full URL."
   },
   "checkout": {
     "title": "Checkout",
@@ -87,9 +147,40 @@
     "total": "Total",
     "confirm": "Confirm order"
   },
+  "blog": {
+    "title": "Fashion blog",
+    "subtitle": "Trends, style signals, and GoodLuck culture.",
+    "read": "Read",
+    "back": "Back to blog",
+    "minRead": "{min} min"
+  },
+  "faq": {
+    "title": "FAQ",
+    "subtitle": "Shipping, exchanges, customization, and payments in Colombia."
+  },
+  "legal": {
+    "termsTitle": "Terms & conditions",
+    "termsSubtitle": "GoodLuck purchase terms for e-commerce in Colombia.",
+    "privacyTitle": "Privacy & cookies",
+    "privacySubtitle": "Personal data processing under Colombia's Law 1581 of 2012.",
+    "updated": "Last updated: August 2026"
+  },
+  "cookies": {
+    "title": "We use cookies",
+    "body": "We use necessary cookies to run the site and, if you accept, analytics cookies to improve the experience. You can change your mind anytime. More in Privacy.",
+    "accept": "Accept all",
+    "reject": "Necessary only",
+    "more": "Privacy policy"
+  },
   "common": {
     "language": "Language",
     "currency": "Currency",
     "close": "Close"
+  },
+  "footer": {
+    "explore": "Explore",
+    "legal": "Legal",
+    "help": "Help",
+    "colombia": "Shipping across Colombia · COP / USD · ES / EN"
   }
 }

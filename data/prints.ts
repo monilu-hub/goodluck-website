@@ -4,10 +4,22 @@ export type PrintDesign = {
   id: string;
   collection: string;
   name: string;
+  /** Prefer transparent PNG for the designer canvas */
   url: string;
+  /** Optional original/raster preview (with background) for home rails */
+  previewUrl?: string;
+  transparentUrl?: string;
 };
 
 export const PRINTS: PrintDesign[] = printsJson as PrintDesign[];
+
+export function printPreviewUrl(print: PrintDesign) {
+  return print.previewUrl || print.url;
+}
+
+export function printDesignUrl(print: PrintDesign) {
+  return print.transparentUrl || print.url;
+}
 
 export function getPrintsByCollection(collection?: string) {
   if (!collection) return PRINTS;

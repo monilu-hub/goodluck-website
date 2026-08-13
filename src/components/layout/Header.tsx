@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import type { CurrencyCode, LocaleCode } from "@/lib/currency";
 import { useCartStore } from "@/stores/cart-store";
@@ -17,16 +17,18 @@ export function Header() {
   const count = useCartStore((s) => s.count());
   const currency = usePrefsStore((s) => s.currency);
   const setCurrency = usePrefsStore((s) => s.setCurrency);
-  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openForPath, setOpenForPath] = useState(pathname);
 
-  useEffect(() => setMounted(true), []);
-  useEffect(() => setOpen(false), [pathname]);
+  if (openForPath !== pathname) {
+    setOpenForPath(pathname);
+    if (open) setOpen(false);
+  }
 
   const links = [
     { href: "/catalogo", label: t("catalog") },
     { href: "/colecciones/ss26", label: t("ss26") },
-    { href: "/colecciones/mundial-fifa26", label: t("mundial") },
+    { href: "/blog", label: t("blog") },
     { href: "/quiz", label: t("discover") },
     { href: "/disenar", label: t("design") },
   ] as const;
@@ -38,13 +40,13 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-        <Link href="/" className="relative flex h-10 w-28 shrink-0 items-center">
+        <Link href="/" className="relative flex h-11 w-36 shrink-0 items-center sm:w-40">
           <Image
-            src="/brand/logo.webp"
+            src="/brand/logo.png"
             alt="GoodLuck"
             fill
             className="object-contain object-left"
-            sizes="112px"
+            sizes="160px"
             priority
           />
         </Link>
@@ -93,8 +95,9 @@ export function Header() {
             href="/checkout"
             className="rounded-full bg-ink px-3 py-1.5 text-surface transition hover:bg-accent"
           >
-            {t("cart")}
-            {mounted ? ` (${count})` : ""}
+            <span suppressHydrationWarning>
+              {t("cart")} ({count})
+            </span>
           </Link>
           <button
             type="button"

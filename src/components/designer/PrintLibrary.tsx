@@ -2,7 +2,11 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { PRINT_COLLECTIONS, PRINTS } from "../../../data/prints";
+import {
+  PRINT_COLLECTIONS,
+  PRINTS,
+  printDesignUrl,
+} from "../../../data/prints";
 
 type Props = {
   onSelect: (url: string) => void;
@@ -14,8 +18,13 @@ export function PrintLibrary({ onSelect }: Props) {
   const items = useMemo(
     () =>
       PRINTS.filter(
-        (p) => p.collection === collection && !p.name.toLowerCase().includes("back"),
-      ).slice(0, 24),
+        (p) =>
+          p.collection === collection &&
+          !p.name.toLowerCase().includes("back") &&
+          !p.name.toLowerCase().includes("colores") &&
+          // Skip full-garment mockups mistakenly filed under prints
+          !p.name.toLowerCase().startsWith("camiseta-"),
+      ).slice(0, 28),
     [collection],
   );
 
@@ -42,14 +51,15 @@ export function PrintLibrary({ onSelect }: Props) {
           <button
             key={print.id}
             type="button"
-            onClick={() => onSelect(print.url)}
-            className="relative aspect-square overflow-hidden border border-border bg-background"
+            onClick={() => onSelect(printDesignUrl(print))}
+            className="relative aspect-square overflow-hidden border border-border bg-[linear-gradient(45deg,#e8e2d8_25%,transparent_25%),linear-gradient(-45deg,#e8e2d8_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#e8e2d8_75%),linear-gradient(-45deg,transparent_75%,#e8e2d8_75%)] bg-[length:12px_12px] bg-[position:0_0,0_6px,6px_-6px,-6px_0]"
+            title={print.name}
           >
             <Image
-              src={print.url}
+              src={printDesignUrl(print)}
               alt={print.name}
               fill
-              className="object-cover"
+              className="object-contain p-1"
               sizes="96px"
             />
           </button>

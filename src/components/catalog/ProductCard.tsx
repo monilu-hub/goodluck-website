@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Product } from "@/types";
+import { productHeroUrl } from "../../../data/lookbook";
 import { useMoney } from "@/hooks/useMoney";
 import { colorHex } from "@/lib/colors";
 import { Link } from "@/i18n/navigation";
@@ -14,10 +15,8 @@ export function ProductCard({ product }: { product: Product }) {
   const { format } = useMoney();
   const addItem = useCartStore((s) => s.addItem);
   const [added, setAdded] = useState(false);
-  const image =
-    product.images[0]?.url ??
-    "/products/mockups/camiseta-oversized-fit-negro-h-m-co-1-front.webp";
   const defaultColor = product.colors[0] ?? "";
+  const image = productHeroUrl(product, defaultColor);
   const defaultSize = product.sizes[1] ?? product.sizes[0] ?? "M";
   const variant = product.variants.find(
     (v) => v.color === defaultColor && v.size === defaultSize,

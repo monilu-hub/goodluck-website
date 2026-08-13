@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { PRINTS } from "../../../data/prints";
 import { FadeUp, ParallaxImage } from "@/components/motion/Parallax";
 import { ProductGrid } from "@/components/catalog/ProductGrid";
 import { Link } from "@/i18n/navigation";
+import { lookbookPath } from "../../../data/lookbook";
 import type { Collection, Product } from "@/types";
+
+const HERO_LOOKBOOK = lookbookPath("camiseta-oversized-fit", "negro");
 
 type Props = {
   collections: Collection[];
@@ -15,7 +17,20 @@ type Props = {
 
 export function HomePage({ collections, featured }: Props) {
   const t = useTranslations("home");
-  const printRail = PRINTS.filter((p) => !p.name.includes("back")).slice(0, 16);
+  const toolFeatures = [
+    {
+      title: t("toolFeature1Title"),
+      body: t("toolFeature1Body"),
+    },
+    {
+      title: t("toolFeature2Title"),
+      body: t("toolFeature2Body"),
+    },
+    {
+      title: t("toolFeature3Title"),
+      body: t("toolFeature3Body"),
+    },
+  ] as const;
 
   return (
     <div>
@@ -23,7 +38,7 @@ export function HomePage({ collections, featured }: Props) {
         <ParallaxImage className="absolute inset-0" speed={60}>
           <div className="relative h-[120%] w-full -translate-y-[8%]">
             <Image
-              src="/products/mockups/camiseta-oversized-fit-negro-h-m-co-1-front.webp"
+              src={HERO_LOOKBOOK}
               alt="GoodLuck"
               fill
               priority
@@ -35,13 +50,13 @@ export function HomePage({ collections, featured }: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/30 to-ink/10" />
         <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-4 pb-14 pt-28 sm:px-6 sm:pb-20">
           <FadeUp>
-            <div className="relative mb-4 h-12 w-40 sm:h-14 sm:w-48">
+            <div className="relative mb-4 h-12 w-44 sm:h-14 sm:w-52">
               <Image
-                src="/brand/logo.webp"
+                src="/brand/logo.png"
                 alt="GoodLuck"
                 fill
                 className="object-contain object-left brightness-0 invert"
-                sizes="192px"
+                sizes="208px"
                 priority
               />
             </div>
@@ -113,33 +128,78 @@ export function HomePage({ collections, featured }: Props) {
         </div>
       </section>
 
-      <section className="border-y border-border/60 bg-surface/50 py-14 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <FadeUp>
-            <h2 className="font-display text-3xl font-semibold text-ink">{t("prints")}</h2>
-            <p className="mt-2 text-sm text-muted">{t("printsSub")}</p>
-          </FadeUp>
-        </div>
-        <div className="mt-8 flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide sm:px-6">
-          {printRail.map((print, i) => (
-            <FadeUp key={print.id} delay={Math.min(i, 6) * 0.04} className="shrink-0">
+      <section className="relative overflow-hidden border-y border-border/60 py-16 sm:py-24">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(900px_420px_at_15%_20%,color-mix(in_oklab,var(--accent)_18%,transparent),transparent_60%),radial-gradient(700px_380px_at_90%_80%,color-mix(in_oklab,var(--highlight)_14%,transparent),transparent_55%)]"
+        />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+          <div>
+            <FadeUp>
+              <p className="text-xs font-medium uppercase tracking-[0.22em] text-highlight">
+                {t("toolDelivery")}
+              </p>
+              <h2 className="font-display mt-3 max-w-xl text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+                {t("toolTitle")}
+              </h2>
+              <p className="mt-4 max-w-lg text-base leading-relaxed text-muted">
+                {t("toolSub")}
+              </p>
+            </FadeUp>
+
+            <ul className="mt-8 space-y-5">
+              {toolFeatures.map((feature, i) => (
+                <FadeUp key={feature.title} delay={0.08 + i * 0.06}>
+                  <li className="flex gap-4">
+                    <span
+                      aria-hidden
+                      className="mt-1 font-display text-sm font-semibold text-accent"
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <p className="font-display text-base font-semibold text-ink">
+                        {feature.title}
+                      </p>
+                      <p className="mt-1 text-sm leading-relaxed text-muted">
+                        {feature.body}
+                      </p>
+                    </div>
+                  </li>
+                </FadeUp>
+              ))}
+            </ul>
+
+            <FadeUp delay={0.3}>
               <Link
                 href="/disenar"
-                className="group relative block h-44 w-36 overflow-hidden sm:h-56 sm:w-44"
+                className="mt-10 inline-flex rounded-full bg-ink px-6 py-3.5 text-sm font-medium text-surface transition hover:bg-accent"
               >
-                <Image
-                  src={print.url}
-                  alt={print.name}
-                  fill
-                  className="object-cover transition duration-500 group-hover:scale-105"
-                  sizes="176px"
-                />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/70 to-transparent p-2">
-                  <p className="truncate text-[11px] text-surface">{print.name}</p>
-                </div>
+                {t("toolCta")}
               </Link>
             </FadeUp>
-          ))}
+          </div>
+
+          <FadeUp delay={0.12}>
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-3xl bg-ink shadow-[0_24px_60px_-28px_rgba(18,16,14,0.55)] lg:max-w-none">
+              <Image
+                src={HERO_LOOKBOOK}
+                alt=""
+                fill
+                className="object-cover object-top"
+                sizes="(max-width: 1024px) 90vw, 480px"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/15 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-5 text-surface sm:p-6">
+                <p className="text-[11px] uppercase tracking-[0.2em] text-surface/70">
+                  GoodLuck Designer
+                </p>
+                <p className="font-display mt-1 text-lg font-semibold sm:text-xl">
+                  {t("toolDelivery")}
+                </p>
+              </div>
+            </div>
+          </FadeUp>
         </div>
       </section>
 

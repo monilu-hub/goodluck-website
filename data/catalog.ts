@@ -1,7 +1,52 @@
-import type { Collection, Product } from "@/types";
+import type { Collection, Product, ProductImage } from "@/types";
 import { colorHex } from "@/lib/colors";
+import { lookbookPath } from "./lookbook";
 
 const SIZES = ["S", "M", "L", "XL"];
+
+/** Lookbook first (model wearing garment), mockup as fallback entry. */
+function catalogImages(
+  slug: string,
+  entries: Array<{
+    color: string;
+    front: string;
+    back?: string;
+    alt: string;
+  }>,
+): ProductImage[] {
+  const out: ProductImage[] = [];
+  for (const e of entries) {
+    out.push({
+      url: lookbookPath(slug, e.color, "front"),
+      alt: `${e.alt} · lookbook`,
+      view: "front",
+      color: e.color,
+    });
+    if (e.back) {
+      out.push({
+        url: lookbookPath(slug, e.color, "back"),
+        alt: `${e.alt} espalda · lookbook`,
+        view: "back",
+        color: e.color,
+      });
+    }
+    out.push({
+      url: e.front,
+      alt: e.alt,
+      view: "front",
+      color: e.color,
+    });
+    if (e.back) {
+      out.push({
+        url: e.back,
+        alt: `${e.alt} espalda`,
+        view: "back",
+        color: e.color,
+      });
+    }
+  }
+  return out;
+}
 
 function variants(
   productId: string,
@@ -63,7 +108,7 @@ export const COLLECTIONS: Collection[] = [
     name: "SS26",
     description:
       "Colección Spring/Summer 2026 — cortes limpios y color con personalidad.",
-    heroImage: IMG.oversizedNegro,
+    heroImage: lookbookPath("camiseta-oversized-fit", "negro"),
     sortOrder: 1,
   },
   {
@@ -72,7 +117,7 @@ export const COLLECTIONS: Collection[] = [
     name: "Día del Padre 2026",
     description:
       "Piezas pensadas para regalar — oversized, algodón y detalles GoodLuck.",
-    heroImage: IMG.oversizedCafe,
+    heroImage: lookbookPath("oversized-dia-del-padre", "cafe"),
     sortOrder: 2,
   },
   {
@@ -81,7 +126,7 @@ export const COLLECTIONS: Collection[] = [
     name: "Mundial FIFA26",
     description:
       "Pre-orden edición Mundial — colores vivos listos para la cancha y la calle.",
-    heroImage: IMG.mundialRoja,
+    heroImage: lookbookPath("camiseta-mundial-fifa26", "roja"),
     sortOrder: 3,
   },
 ];
@@ -110,32 +155,36 @@ export const PRODUCTS: Product[] = [
     ],
     sizes: SIZES,
     featured: true,
-    images: [
+    images: catalogImages("camiseta-oversized-fit", [
       {
-        url: IMG.oversizedNegro,
+        color: "negro",
+        front: IMG.oversizedNegro,
+        back: IMG.oversizedNegroBack,
         alt: "Camiseta Oversized Fit negro",
-        view: "front",
-        color: "negro",
       },
       {
-        url: IMG.oversizedNegroBack,
-        alt: "Camiseta Oversized Fit negro espalda",
-        view: "back",
-        color: "negro",
-      },
-      {
-        url: IMG.oversizedOff,
-        alt: "Camiseta Oversized Fit off-white",
-        view: "front",
         color: "off-white",
+        front: IMG.oversizedOff,
+        alt: "Camiseta Oversized Fit off-white",
       },
       {
-        url: IMG.oversizedBeige,
-        alt: "Camiseta Oversized Fit beige",
-        view: "front",
         color: "beige-oscuro",
+        front: IMG.oversizedBeige,
+        alt: "Camiseta Oversized Fit beige",
       },
-    ],
+      { color: "gris", front: IMG.oversizedGris, alt: "Camiseta Oversized Fit gris" },
+      { color: "cafe", front: IMG.oversizedCafe, alt: "Camiseta Oversized Fit café" },
+      {
+        color: "verde-oliva",
+        front: IMG.oversizedOliva,
+        alt: "Camiseta Oversized Fit oliva",
+      },
+      {
+        color: "acid-negro",
+        front: IMG.oversizedAcid,
+        alt: "Camiseta Oversized Fit acid",
+      },
+    ]),
     variants: variants(
       "prod-oversized",
       [
@@ -149,13 +198,13 @@ export const PRODUCTS: Product[] = [
       ],
       89900,
       {
-        negro: IMG.oversizedNegro,
-        "off-white": IMG.oversizedOff,
-        "beige-oscuro": IMG.oversizedBeige,
-        gris: IMG.oversizedGris,
-        cafe: IMG.oversizedCafe,
-        "verde-oliva": IMG.oversizedOliva,
-        "acid-negro": IMG.oversizedAcid,
+        negro: lookbookPath("camiseta-oversized-fit", "negro"),
+        "off-white": lookbookPath("camiseta-oversized-fit", "off-white"),
+        "beige-oscuro": lookbookPath("camiseta-oversized-fit", "beige-oscuro"),
+        gris: lookbookPath("camiseta-oversized-fit", "gris"),
+        cafe: lookbookPath("camiseta-oversized-fit", "cafe"),
+        "verde-oliva": lookbookPath("camiseta-oversized-fit", "verde-oliva"),
+        "acid-negro": lookbookPath("camiseta-oversized-fit", "acid-negro"),
       },
     ),
   },
@@ -174,27 +223,25 @@ export const PRODUCTS: Product[] = [
     colors: ["rosado-apagado", "verde-caqui"],
     sizes: SIZES,
     featured: true,
-    images: [
+    images: catalogImages("camiseta-algodon", [
       {
-        url: IMG.algodonRosado,
-        alt: "Camiseta algodón rosado",
-        view: "front",
         color: "rosado-apagado",
+        front: IMG.algodonRosado,
+        alt: "Camiseta algodón rosado",
       },
       {
-        url: IMG.algodonCaqui,
-        alt: "Camiseta algodón caqui",
-        view: "front",
         color: "verde-caqui",
+        front: IMG.algodonCaqui,
+        alt: "Camiseta algodón caqui",
       },
-    ],
+    ]),
     variants: variants(
       "prod-algodon",
       ["rosado-apagado", "verde-caqui"],
       79900,
       {
-        "rosado-apagado": IMG.algodonRosado,
-        "verde-caqui": IMG.algodonCaqui,
+        "rosado-apagado": lookbookPath("camiseta-algodon", "rosado-apagado"),
+        "verde-caqui": lookbookPath("camiseta-algodon", "verde-caqui"),
       },
     ),
   },
@@ -212,23 +259,13 @@ export const PRODUCTS: Product[] = [
     colors: ["negro", "off-white"],
     sizes: SIZES,
     featured: true,
-    images: [
-      {
-        url: IMG.crop,
-        alt: "Crop top negro",
-        view: "front",
-        color: "negro",
-      },
-      {
-        url: IMG.cropAlt,
-        alt: "Crop top oversized",
-        view: "front",
-        color: "off-white",
-      },
-    ],
+    images: catalogImages("crop-top-femenino", [
+      { color: "negro", front: IMG.crop, alt: "Crop top negro" },
+      { color: "off-white", front: IMG.cropAlt, alt: "Crop top off-white" },
+    ]),
     variants: variants("prod-crop", ["negro", "off-white"], 74900, {
-      negro: IMG.crop,
-      "off-white": IMG.cropAlt,
+      negro: lookbookPath("crop-top-femenino", "negro"),
+      "off-white": lookbookPath("crop-top-femenino", "off-white"),
     }),
   },
   {
@@ -246,23 +283,29 @@ export const PRODUCTS: Product[] = [
     colors: ["negro", "cafe", "gris-medio", "beige-oscuro"],
     sizes: SIZES,
     featured: true,
-    images: [
+    images: catalogImages("oversized-dia-del-padre", [
+      { color: "cafe", front: IMG.oversizedCafe, alt: "Oversized Día del Padre café" },
+      { color: "negro", front: IMG.oversizedNegro, alt: "Oversized Día del Padre negro" },
       {
-        url: IMG.oversizedCafe,
-        alt: "Oversized Día del Padre café",
-        view: "front",
-        color: "cafe",
+        color: "gris-medio",
+        front: "/products/mockups/camiseta-oversized-fit-gris-medio.webp",
+        alt: "Oversized Día del Padre gris",
       },
-    ],
+      {
+        color: "beige-oscuro",
+        front: IMG.oversizedBeige,
+        alt: "Oversized Día del Padre beige",
+      },
+    ]),
     variants: variants(
       "prod-padre",
       ["negro", "cafe", "gris-medio", "beige-oscuro"],
       94900,
       {
-        negro: IMG.oversizedNegro,
-        cafe: IMG.oversizedCafe,
-        "gris-medio": "/products/mockups/camiseta-oversized-fit-gris-medio.webp",
-        "beige-oscuro": IMG.oversizedBeige,
+        negro: lookbookPath("oversized-dia-del-padre", "negro"),
+        cafe: lookbookPath("oversized-dia-del-padre", "cafe"),
+        "gris-medio": lookbookPath("oversized-dia-del-padre", "gris-medio"),
+        "beige-oscuro": lookbookPath("oversized-dia-del-padre", "beige-oscuro"),
       },
     ),
   },
@@ -289,26 +332,31 @@ export const PRODUCTS: Product[] = [
     ],
     sizes: SIZES,
     featured: true,
-    images: [
+    images: catalogImages("camiseta-mundial-fifa26", [
+      { color: "roja", front: IMG.mundialRoja, alt: "Camiseta Mundial roja" },
       {
-        url: IMG.mundialRoja,
-        alt: "Camiseta Mundial roja",
-        view: "front",
-        color: "roja",
-      },
-      {
-        url: IMG.mundialAmarilla,
-        alt: "Camiseta Mundial amarilla",
-        view: "front",
         color: "amarilla",
+        front: IMG.mundialAmarilla,
+        alt: "Camiseta Mundial amarilla",
       },
       {
-        url: IMG.mundialNavy,
-        alt: "Camiseta Mundial navy",
-        view: "front",
         color: "azul-navy",
+        front: IMG.mundialNavy,
+        alt: "Camiseta Mundial navy",
       },
-    ],
+      { color: "azul-rey", front: IMG.mundialRey, alt: "Camiseta Mundial azul rey" },
+      { color: "rosada", front: IMG.mundialRosada, alt: "Camiseta Mundial rosada" },
+      {
+        color: "baby-blue",
+        front: IMG.mundialBaby,
+        alt: "Camiseta Mundial baby blue",
+      },
+      {
+        color: "off-white",
+        front: IMG.mundialOff,
+        alt: "Camiseta Mundial off-white",
+      },
+    ]),
     variants: variants(
       "prod-mundial",
       [
@@ -322,13 +370,13 @@ export const PRODUCTS: Product[] = [
       ],
       99900,
       {
-        roja: IMG.mundialRoja,
-        amarilla: IMG.mundialAmarilla,
-        "azul-navy": IMG.mundialNavy,
-        "azul-rey": IMG.mundialRey,
-        rosada: IMG.mundialRosada,
-        "baby-blue": IMG.mundialBaby,
-        "off-white": IMG.mundialOff,
+        roja: lookbookPath("camiseta-mundial-fifa26", "roja"),
+        amarilla: lookbookPath("camiseta-mundial-fifa26", "amarilla"),
+        "azul-navy": lookbookPath("camiseta-mundial-fifa26", "azul-navy"),
+        "azul-rey": lookbookPath("camiseta-mundial-fifa26", "azul-rey"),
+        rosada: lookbookPath("camiseta-mundial-fifa26", "rosada"),
+        "baby-blue": lookbookPath("camiseta-mundial-fifa26", "baby-blue"),
+        "off-white": lookbookPath("camiseta-mundial-fifa26", "off-white"),
       },
     ),
   },
@@ -345,18 +393,19 @@ export const PRODUCTS: Product[] = [
     isCustomizable: true,
     colors: ["roja", "negro", "azul-navy"],
     sizes: SIZES,
-    images: [
+    images: catalogImages("camiseta-tela-fria", [
+      { color: "roja", front: IMG.mundialRoja, alt: "Camiseta tela fría roja" },
+      { color: "negro", front: IMG.oversizedNegro, alt: "Camiseta tela fría negro" },
       {
-        url: IMG.mundialRoja,
-        alt: "Camiseta tela fría roja",
-        view: "front",
-        color: "roja",
+        color: "azul-navy",
+        front: IMG.mundialNavy,
+        alt: "Camiseta tela fría navy",
       },
-    ],
+    ]),
     variants: variants("prod-fria", ["roja", "negro", "azul-navy"], 84900, {
-      roja: IMG.mundialRoja,
-      negro: IMG.oversizedNegro,
-      "azul-navy": IMG.mundialNavy,
+      roja: lookbookPath("camiseta-tela-fria", "roja"),
+      negro: lookbookPath("camiseta-tela-fria", "negro"),
+      "azul-navy": lookbookPath("camiseta-tela-fria", "azul-navy"),
     }),
   },
 ];

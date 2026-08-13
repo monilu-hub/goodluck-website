@@ -6,7 +6,9 @@
     "ss26": "SS26",
     "mundial": "Mundial",
     "design": "Diseñar",
-    "discover": "Descubrir",
+    "discover": "Tu vibe",
+    "blog": "Blog",
+    "faq": "FAQ",
     "account": "Cuenta",
     "cart": "Carrito",
     "menu": "Menú"
@@ -17,25 +19,56 @@
     "sub": "Catálogo SS26, ediciones especiales y tu propio diseño en minutos.",
     "ctaCatalog": "Ver catálogo",
     "ctaDesign": "Diseñar ahora",
-    "ctaQuiz": "Descubre tu frase",
+    "ctaQuiz": "Descubre tu vibe",
     "collections": "Colecciones",
     "collectionsSub": "Tres líneas activas, un mismo estándar.",
     "prints": "Estampados GoodLuck",
     "printsSub": "Arte original listo para personalizar.",
+    "toolTitle": "Diseña en minutos. Luce en 24 horas.",
+    "toolSub": "Personaliza para regalar, coquetear, o para farmear good luck — y te lo entregamos en Medellín en 24 horas.",
+    "toolDelivery": "Entrega en 24 horas · Medellín",
+    "toolFeature1Title": "Prenda + color en vivo",
+    "toolFeature1Body": "Elige oversized, crop o tela fría y ve el look sobre el modelo al instante.",
+    "toolFeature2Title": "Tu diseño encima",
+    "toolFeature2Body": "Texto, estampados GoodLuck, foto o QR de tu link favorito.",
+    "toolFeature3Title": "Listo para regalar o ligar",
+    "toolFeature3Body": "Una pieza con carácter: para alguien especial, o para atraer la tuya.",
+    "toolCta": "Abrir el diseñador",
     "featured": "Destacados",
     "featuredSub": "Piezas listas para llevar o personalizar.",
     "designCta": "Diseña la tuya",
-    "designCtaSub": "Elige prenda, sube tu arte o usa nuestros estampados."
+    "designCtaSub": "Elige prenda, sube tu arte o usa nuestros estampados.",
+    "blog": "Moda & tendencias",
+    "blogSub": "Señales, estilo y lo que se está usando."
   },
   "quiz": {
-    "title": "Tu good luck en el amor",
-    "subtitle": "Cuatro preguntas. Un perfil. Una frase que te hace más atractivo.",
-    "progress": "Pregunta {current} de {total}",
+    "title": "¿Qué vibe proyectas?",
+    "subtitle": "No es un test de personalidad vacío: es un mapa de cómo atraes. Cuatro señales. Un perfil. Una frase que se siente tuya.",
+    "progress": "Señal {current} de {total}",
     "back": "Anterior",
-    "yourMatch": "Tu diseño",
+    "yourMatch": "Tu arquetipo",
     "yourPhrase": "Tu frase",
-    "ctaPersonalize": "Personalizar con esta frase",
-    "retake": "Volver a intentar"
+    "ctaPersonalize": "Ponerla en mi camiseta",
+    "retake": "Repetir el mapa",
+    "fabLabel": "Tu vibe",
+    "fabOpen": "Abrir mapa de atracción",
+    "fabClose": "Cerrar",
+    "chatEyebrow": "GoodLuck · lectura rápida",
+    "chatIntro": "Responde sin pensarlo demasiado. El cuerpo ya sabe qué señal quieres mandar."
+  },
+  "whatsapp": {
+    "label": "WhatsApp",
+    "aria": "Escribir por WhatsApp",
+    "default": "Hola GoodLuck 👋 Estoy en la web y quiero ayuda con una prenda.",
+    "home": "Hola GoodLuck 👋 Vi la home y quiero que me ayuden a elegir look / diseño.",
+    "catalog": "Hola GoodLuck 👋 Estoy en el catálogo y quiero asesoría para elegir talla/color.",
+    "collection": "Hola GoodLuck 👋 Estoy viendo la colección {name} y quiero recomendaciones.",
+    "product": "Hola GoodLuck 👋 Me interesa {name}. ¿Me ayudan con stock, talla o personalización?",
+    "designer": "Hola GoodLuck 👋 Estoy diseñando una prenda y quiero apoyo con mi diseño.",
+    "quiz": "Hola GoodLuck 👋 Hice el mapa de vibe y quiero llevar mi frase a una camiseta.",
+    "checkout": "Hola GoodLuck 👋 Estoy en checkout y tengo una duda de envío o pago.",
+    "blog": "Hola GoodLuck 👋 Leí el blog y quiero comprar algo de esa inspo.",
+    "legal": "Hola GoodLuck 👋 Tengo una consulta sobre pedido, políticas o datos personales."
   },
   "catalog": {
     "title": "Catálogo",
@@ -73,7 +106,34 @@
     "fontColor": "Color texto",
     "stepGarment": "Prenda",
     "stepDesign": "Diseño",
-    "stepModel": "Modelo"
+    "stepModel": "Modelo",
+    "panelGarment": "Prenda",
+    "panelModel": "Modelo",
+    "panelDesign": "Diseño",
+    "stageLabel": "Lienzo",
+    "cameraFront": "Frente",
+    "cameraSide": "Lado",
+    "cameraBack": "Espalda",
+    "heightHint": "Cada 10 cm cambia la pose del modelo en el lienzo.",
+    "heightPose": "Pose {band} cm",
+    "designHint": "Edita texto, fuentes, estampados, fotos o QR directo sobre la camiseta del modelo.",
+    "edit": "Editar",
+    "done": "Listo",
+    "uploadPhoto": "Subir foto del dispositivo",
+    "duplicate": "Duplicar",
+    "flip": "Voltear",
+    "rotate": "Rotar",
+    "modelPreviewHint": "Prueba el look en el modelo · cambia color y estampa en vivo",
+    "designOnModelHint": "Coloca texto, estampados o QR en la tabla; el modelo a la izquierda se actualiza al instante.",
+    "priceTotal": "Total",
+    "priceCustomization": "personalización",
+    "addedToCart": "Añadido al carrito",
+    "qr": "QR",
+    "qrHint": "Pega un link (Instagram, Spotify, web…) y lo convertimos en QR para la camiseta.",
+    "qrPlaceholder": "https://tu-link.com",
+    "qrGenerate": "Generar QR y colocarlo",
+    "qrGenerating": "Generando…",
+    "qrInvalid": "Link inválido. Prueba con una URL completa."
   },
   "checkout": {
     "title": "Checkout",
@@ -87,9 +147,40 @@
     "total": "Total",
     "confirm": "Confirmar pedido"
   },
+  "blog": {
+    "title": "Blog de moda",
+    "subtitle": "Tendencias, señales de estilo y cultura GoodLuck.",
+    "read": "Leer",
+    "back": "Volver al blog",
+    "minRead": "{min} min"
+  },
+  "faq": {
+    "title": "Preguntas frecuentes",
+    "subtitle": "Envíos, cambios, personalización y pagos en Colombia."
+  },
+  "legal": {
+    "termsTitle": "Términos y condiciones",
+    "termsSubtitle": "Condiciones de compra GoodLuck para e-commerce en Colombia.",
+    "privacyTitle": "Privacidad y cookies",
+    "privacySubtitle": "Tratamiento de datos personales conforme a la Ley 1581 de 2012.",
+    "updated": "Última actualización: agosto 2026"
+  },
+  "cookies": {
+    "title": "Usamos cookies",
+    "body": "Usamos cookies necesarias para el sitio y, si aceptas, cookies de analítica para mejorar la experiencia. Puedes cambiar de opinión cuando quieras. Más info en Privacidad.",
+    "accept": "Aceptar todas",
+    "reject": "Solo necesarias",
+    "more": "Política de privacidad"
+  },
   "common": {
     "language": "Idioma",
     "currency": "Moneda",
     "close": "Cerrar"
+  },
+  "footer": {
+    "explore": "Explorar",
+    "legal": "Legal",
+    "help": "Ayuda",
+    "colombia": "Envíos a toda Colombia · COP / USD · ES / EN"
   }
 }
